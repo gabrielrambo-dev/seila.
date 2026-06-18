@@ -1,0 +1,22 @@
+{
+  "name": "codestudy-pro-mobile",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "build": "echo Projeto web pronto em www",
+    "cap:add": "cap add android",
+    "cap:sync": "cap sync android",
+    "build:apk": "cd android && chmod +x gradlew && ./gradlew assembleDebug --stacktrace"
+  },
+  "dependencies": {
+    "@capacitor/android": "7.4.3",
+    "@capacitor/core": "7.4.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "7.4.3"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
