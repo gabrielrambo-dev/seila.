@@ -1,0 +1,65 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar arquivos
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Mostrar versões
+        run: |
+          node -v
+          npm -v
+          java -version
+
+      - name: Instalar dependências fixas
+        run: |
+          npm config set fund false
+          npm config set audit false
+          npm install --no-audit --no-fund
+
+      - name: Preparar arquivos web
+        run: |
+          rm -rf www
+          mkdir -p www/icons
+          cp -f index.html styles.css app.js data.js manifest.webmanifest sw.js www/
+          cp -f icons/* www/icons/ || true
+          ls -la www
+
+      - name: Criar Android limpo
+        run: |
+          rm -rf android
+          npx cap add android
+
+      - name: Sincronizar Android
+        run: npx cap sync android
+
+      - name: Gerar APK debug
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug --stacktrace --no-daemon
+
+      - name: Enviar APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: CodeStudy-Pro-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
